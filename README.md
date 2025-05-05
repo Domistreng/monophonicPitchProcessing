@@ -18,7 +18,7 @@ Name of User (used in application)
 
 
 ```python
-userId = 'Temp'
+userId = 'user'
 ```
 
 Load audio file (only accepts .wav file)
@@ -136,6 +136,7 @@ class PitchAnalyzer:
         #     plt.plot(timeList[i], signal[i], 'bo')
         
         plt.savefig(fileLoc)
+        plt.show()
         plt.close()
 
         # plt.savefig('my_plot.png')
@@ -184,6 +185,7 @@ class PitchAnalyzer:
         #     plt.plot(timeList[i], signal[i], 'bo')
         
         plt.savefig(fileLoc)
+        plt.show()
         plt.close()
             
         
@@ -284,6 +286,7 @@ class PitchAnalyzer:
                 plt.plot(timeList[i], signal[i], 'bo')
 
             plt.savefig(fileName) 
+            plt.show()
             plt.close()
         
         return(avgFreq)
@@ -302,3 +305,21 @@ Graph all pitches
 ```python
 thisAnalyzer.graphPitches("./data/processed/pitchesPlotFull" + userId + ".png")
 ```
+
+
+    
+![png](README_files/README_16_0.png)
+    
+
+
+
+    
+![png](README_files/README_16_1.png)
+    
+
+
+
+    
+![png](README_files/README_16_2.png)
+    
+
