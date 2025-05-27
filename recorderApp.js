@@ -11,7 +11,6 @@ var audioContext //audio context to help us record
 
 var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
-var pauseButton = document.getElementById("pauseButton");
 
 //add events to those 2 buttons
 // recordButton.addEventListener("click", startRecording);
@@ -23,6 +22,7 @@ recordButton.addEventListener("click", changeRecordingState);
 var submitButton = document.getElementById("submitAssignment");
 
 submitButton.addEventListener("click", submitRecording);
+submitButton.style.display = "none";
 
 function submitRecording() {
 
@@ -37,53 +37,9 @@ function changeRecordingState() {
 	else if (rec.recording) {
 		stopRecording()
 	}
-	else {
-		clearRecording()
-	}
 }
 
-function unClearRecording() {
-	var resultsDiv = document.getElementById("results");
-	resultsDiv.style.display = "block";
 
-	var tempImg = document.getElementById("startDiv");
-	tempImg.style.display = "none";
-
-	submitButton.style.display = "block"
-
-	recordButton.innerText = "Clear Recording"
-
-	plotImage = document.getElementById("pitchesPlot")
-	plotImage.src = "https://domis.blue:644/pitchesPlotFull" + userId + ".png?t=" + new Date().getTime();
-	
-	plotImage = document.getElementById("pitchesPlot2")
-	plotImage.src = "https://domis.blue:644/plotPartial" + userId + ".png?t=" + new Date().getTime();
-	
-	plotImage = document.getElementById("pitchesPlot3")
-	plotImage.src = "https://domis.blue:644/plotFull" + userId + ".png?t=" + new Date().getTime();
-
-	prevButton.style.display="none"
-	rec = new Recorder(input,{numChannels:1})
-}
-
-function clearRecording() {
-	rec = undefined
-	recordButton.innerText = "Start Recording"
-	var tempImg = document.getElementById("startDiv");
-	tempImg.style.display = "block";
-
-	var resultsDiv = document.getElementById("results");
-	resultsDiv.style.display = "none";
-
-	submitButton.style.display = "none";
-
-	loadingImage = document.getElementById("startImage")
-	loadingImage.src = loadingImage.code;
-
-
-	
-	
-}
 function startRecording() {
 	console.log("recordButton clicked");
 	recordButton.innerText = "Stop Recording"
@@ -144,28 +100,13 @@ function startRecording() {
 	  	//enable the record button if getUserMedia() fails
     	recordButton.disabled = false;
     	stopButton.disabled = true;
-    	pauseButton.disabled = true
 	});
-}
-
-function pauseRecording(){
-	console.log("pauseButton clicked rec.recording=",rec.recording );
-	if (rec.recording){
-		//pause
-		rec.stop();
-		pauseButton.innerHTML="Resume";
-	}else{
-		//resume
-		rec.record()
-		pauseButton.innerHTML="Pause";
-
-	}
 }
 
 function stopRecording() {
 	console.log("stopButton clicked");
 
-	recordButton.innerText = "Please Wait..."
+	recordButton.innerHTML = "Re-Record"
 
 	// //disable the stop button, enable the record too allow for new recordings
 	// stopButton.disabled = true;
@@ -182,40 +123,11 @@ function stopRecording() {
 	gumStream.getAudioTracks()[0].stop();
 
 	//create the wav blob and pass it on to createDownloadLink
-	rec.exportWAV(uploadToSocket);
-	// rec.exportWAV(createDownloadLink);
+	// rec.exportWAV(uploadToSocket);
+	rec.exportWAV(createDownloadLink);
 }
 
-function readWAVasBase64(file) {
-	return new Promise((resolve, reject) => {
-	  const reader = new FileReader();
-  
-	  reader.onload = (e) => {
-		resolve(e.target.result.split(',')[1]); // Extract the Base64 part
-	  };
-  
-	  reader.onerror = reject;
-  
-	  reader.readAsDataURL(file); 
-	});
-  }
-
-function uploadToSocket(blob) {
-
-    var reader = new FileReader();
-
-	loadingImage = document.getElementById("startImage")
-	loadingImage.src = "https://domis.blue:644/loading.png";
-
-    reader.readAsDataURL(blob); 
-    reader.onloadend = function() {
-        var base64data = reader.result;
-        socket.emit("Recording Submit", {
-			'stringVal': base64data.substring(22),
-			'senderId': userId
-		});
-    }
-}
+// 
 
 function createDownloadLink(blob) {
 	
@@ -265,6 +177,11 @@ function createDownloadLink(blob) {
 	li.appendChild(upload)//add the upload link to li
 
 	//add the li element to the ol
-	recordingsList.appendChild(li);
+	// recordingsList.appendChild(li);
+
+	// -----
+	submitButton.download = filename+".wav";
+	submitButton.href = url;
+	submitButton.style.display = "block";
 }
 
