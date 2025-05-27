@@ -12,6 +12,11 @@ var audioContext //audio context to help us record
 var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
 
+var preAudio = new Audio('./preAudio60bpm.mp3');
+var duringAudio = new Audio('./scaleAudio60bpm.mp3')
+
+
+
 //add events to those 2 buttons
 // recordButton.addEventListener("click", startRecording);
 // stopButton.addEventListener("click", stopRecording);
@@ -42,65 +47,79 @@ function changeRecordingState() {
 
 function startRecording() {
 	console.log("recordButton clicked");
-	recordButton.innerText = "Stop Recording"
 
-	/*
-		Simple constraints object, for more advanced audio features see
-		https://addpipe.com/blog/audio-constraints-getusermedia/
-	*/
-    
-    var constraints = { audio: true, video:false }
+	preAudio.play();
+	recordButton.innerText = "Countdown..."
 
- 	/*
-    	Disable the record button until we get a success or fail from getUserMedia() 
-	*/
-
-	// recordButton.disabled = true;
-	// stopButton.disabled = false;
-	// pauseButton.disabled = false
-
-	/*
-    	We're using the standard promise based getUserMedia() 
-    	https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-	*/
-
-	navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-		console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
+	preAudio.onended = function() {
+		
+		duringAudio.play();
+		recordButton.innerText = "Stop Recording"
 
 		/*
-			create an audio context after getUserMedia is called
-			sampleRate might change after getUserMedia is called, like it does on macOS when recording through AirPods
-			the sampleRate defaults to the one set in your OS for your playback device
-
+			Simple constraints object, for more advanced audio features see
+			https://addpipe.com/blog/audio-constraints-getusermedia/
 		*/
-		audioContext = new AudioContext();
-
-		//update the format 
-		// document.getElementById("formats").innerHTML="Format: 1 channel pcm @ "+audioContext.sampleRate/1000+"kHz"
-
-		/*  assign to gumStream for later use  */
-		gumStream = stream;
 		
-		/* use the stream */
-		input = audioContext.createMediaStreamSource(stream);
+		var constraints = { audio: true, video:false }
 
-		/* 
-			Create the Recorder object and configure to record mono sound (1 channel)
-			Recording 2 channels  will double the file size
+		/*
+			Disable the record button until we get a success or fail from getUserMedia() 
 		*/
-		rec = new Recorder(input,{numChannels:1})
+
+		// recordButton.disabled = true;
+		// stopButton.disabled = false;
+		// pauseButton.disabled = false
+
+		/*
+			We're using the standard promise based getUserMedia() 
+			https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+		*/
+
+		navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+			console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
+
+			/*
+				create an audio context after getUserMedia is called
+				sampleRate might change after getUserMedia is called, like it does on macOS when recording through AirPods
+				the sampleRate defaults to the one set in your OS for your playback device
+
+			*/
+			audioContext = new AudioContext();
+
+			//update the format 
+			// document.getElementById("formats").innerHTML="Format: 1 channel pcm @ "+audioContext.sampleRate/1000+"kHz"
+
+			/*  assign to gumStream for later use  */
+			gumStream = stream;
+			
+			/* use the stream */
+			input = audioContext.createMediaStreamSource(stream);
+
+			/* 
+				Create the Recorder object and configure to record mono sound (1 channel)
+				Recording 2 channels  will double the file size
+			*/
+			rec = new Recorder(input,{numChannels:1})
 
 
-		//start the recording process
-		rec.record()
+			//start the recording process
+			rec.record()
 
-		console.log("Recording started");
+			console.log("Recording started");
 
-	}).catch(function(err) {
-	  	//enable the record button if getUserMedia() fails
-    	recordButton.disabled = false;
-    	stopButton.disabled = true;
-	});
+		}).catch(function(err) {
+			//enable the record button if getUserMedia() fails
+			recordButton.disabled = false;
+			stopButton.disabled = true;
+		});
+
+		duringAudio.onended = function() {
+			stopRecording();
+		};
+	};
+
+	
 }
 
 function stopRecording() {
