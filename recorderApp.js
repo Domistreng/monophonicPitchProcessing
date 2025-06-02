@@ -15,8 +15,6 @@ var stopButton = document.getElementById("stopButton");
 var preAudio = new Audio('./preAudio60bpm.mp3');
 var duringAudio = new Audio('./scaleAudio60bpm.mp3')
 
-
-
 //add events to those 2 buttons
 // recordButton.addEventListener("click", startRecording);
 // stopButton.addEventListener("click", stopRecording);
@@ -48,35 +46,36 @@ function changeRecordingState() {
 function startRecording() {
 	console.log("recordButton clicked");
 
-	preAudio.play();
-	recordButton.innerText = "Countdown..."
+	
 
-	preAudio.onended = function() {
-		
-		duringAudio.play();
-		recordButton.innerText = "Stop Recording"
+	var constraints = { audio: true, video:false }
 
-		/*
-			Simple constraints object, for more advanced audio features see
-			https://addpipe.com/blog/audio-constraints-getusermedia/
-		*/
-		
-		var constraints = { audio: true, video:false }
+	/*
+		Disable the record button until we get a success or fail from getUserMedia() 
+	*/
 
-		/*
-			Disable the record button until we get a success or fail from getUserMedia() 
-		*/
+	// recordButton.disabled = true;
+	// stopButton.disabled = false;
+	// pauseButton.disabled = false
 
-		// recordButton.disabled = true;
-		// stopButton.disabled = false;
-		// pauseButton.disabled = false
+	/*
+		We're using the standard promise based getUserMedia() 
+		https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+	*/
 
-		/*
-			We're using the standard promise based getUserMedia() 
-			https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-		*/
 
-		navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+	navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+
+		preAudio.play();
+		recordButton.innerText = "Countdown..."
+
+		preAudio.onended = function() {
+			
+			duringAudio.play();
+
+			
+			recordButton.innerText = "Stop Recording"
+
 			console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
 
 			/*
@@ -108,16 +107,29 @@ function startRecording() {
 
 			console.log("Recording started");
 
-		}).catch(function(err) {
-			//enable the record button if getUserMedia() fails
-			recordButton.disabled = false;
-			stopButton.disabled = true;
-		});
+			/*
+				Simple constraints object, for more advanced audio features see
+				https://addpipe.com/blog/audio-constraints-getusermedia/
+			*/
+			
+			
+			
+		};
 
 		duringAudio.onended = function() {
 			stopRecording();
 		};
-	};
+		
+
+	}).catch(function(err) {
+		//enable the record button if getUserMedia() fails
+		recordButton.disabled = false;
+		stopButton.disabled = true;
+	});
+
+	
+
+	
 
 	
 }
