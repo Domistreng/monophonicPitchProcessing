@@ -52,7 +52,7 @@ function startRecording() {
 
 	
 
-	var constraints = { audio: true, video:false }
+	var constraints = { audio: {autoGainControl: false, echoCancellation: false, googAutoGainControl: false, noiseSuppression: false}, video:false}
 
 	/*
 		Disable the record button until we get a success or fail from getUserMedia() 
