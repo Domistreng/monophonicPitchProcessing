@@ -11,9 +11,12 @@ var audioContext //audio context to help us record
 
 var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
+var sampleAudioButton = document.getElementById("firstNote");
 
 var preAudio = new Audio('./preAudio60bpm.mp3');
 var duringAudio = new Audio('./scaleAudio60bpm.mp3')
+
+var sampleAudio = new Audio('./sampleSound.wav')
 
 //add events to those 2 buttons
 // recordButton.addEventListener("click", startRecording);
@@ -22,14 +25,15 @@ var duringAudio = new Audio('./scaleAudio60bpm.mp3')
 
 recordButton.addEventListener("click", changeRecordingState);
 
+sampleAudioButton.addEventListener("click", playSampleAudio);
+
 var submitButton = document.getElementById("submitAssignment");
 
-submitButton.addEventListener("click", submitRecording);
 submitButton.style.display = "none";
 
-function submitRecording() {
-
-
+function playSampleAudio() {
+	sampleAudio.currentTime = 0;
+	sampleAudio.play();
 }
 
 function changeRecordingState() {
