@@ -1,5 +1,8 @@
 #This Project is developed to take a wav file of a single voice of music and get the musical pitch at any time frame.
 
+
+#Articles: https://www.iieta.org/download/file/fid/145246
+
 Imports:
 
 
